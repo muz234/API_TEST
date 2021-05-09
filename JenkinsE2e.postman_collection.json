@@ -1,0 +1,379 @@
+{
+	"info": {
+		"_postman_id": "a026e660-9ede-4e7d-ba8e-df7bfd95e5f9",
+		"name": "JenkinsE2e",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "e2e flow",
+			"item": [
+				{
+					"name": "Register new student",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.environment.set(\"studentFirstName\", pm.variables.replaceIn(\"{{$randomFirstName}}\"));",
+									"pm.environment.set(\"studentLastName\", pm.variables.replaceIn(\"{{$randomLastName}}\"));",
+									"pm.environment.set(\"studentEmail\", pm.variables.replaceIn(\"{{$randomEmail}}\"));",
+									"pm.environment.set(\"dob_year\", _.random(1935,2013));",
+									"pm.environment.set(\"dob_day\", _.random(10,28));",
+									"",
+									"pm.environment.set(\"dob_month\", _.random(10,12));",
+									"console.log(environment.dob_month);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"eval(globals.pm);",
+									"describe('Register a new talentTEK Student', function() {",
+									"    // Assertion",
+									"    it('should return 201', function() {",
+									"        response.should.have.status(201);",
+									"    });",
+									"      // Assertion",
+									"    it ('should return success as true', function(){",
+									"           response.body.should.have.property (\"success\").and.equal (true);",
+									"     });",
+									"   // Assertion",
+									"    it ('should return success message', function(){",
+									"           response.body.should.have.property (\"message\").and.equal (\"Registration Success\");",
+									"     });",
+									"// store new student Id from reponse body",
+									"    pm.environment.set(\"student_id\", response.body.id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"firstName\" : \"{{studentFirstName}}\",\n    \"lastName\" : \"{{studentLastName}}\",\n    \"email\"     : \"{{studentEmail}}\",\n    \"password\"  : \"123456\",\n    \"confirmPassword\"  : \"123456\",\n    \"dob\"       : {\n        \"year\"      : {{dob_year}},\n        \"month\"     : {{dob_month}},\n        \"day\"       : {{dob_day}}\n    },\n    \"gender\"    : \"female\",\n    \"agree\"     : true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/api/signup",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"signup"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Verify if student created",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"eval(globals.pm);",
+									"",
+									"describe('Verify if student is created or not', function() {",
+									"    // Assertion",
+									"    it('should return 200', function() {",
+									"        response.should.have.status(200);",
+									"    });",
+									"      // Assertion",
+									"    it ('should return message as Student Found', function(){",
+									"           response.body.should.have.property (\"message\").and.equal ('Student Found');",
+									"     });",
+									"   // Assertion",
+									"    it ('should return expected first name', function(){",
+									"           response.body.data.should.have.property (\"firstName\").and.equal (environment.studentFirstName);",
+									"     });",
+									"   // Assertion",
+									"    it ('should return expected last name', function(){",
+									"           response.body.data.should.have.property (\"lastName\").and.equal (environment.studentLastName);",
+									"     });",
+									"     // Assertion",
+									"    it ('should return expected student id', function(){",
+									"           response.body.data.should.have.property (\"studentId\").and.equal (environment.student_id);",
+									"     });",
+									"       // Assertion",
+									"    it ('should return expected student email', function(){",
+									"           response.body.data.should.have.property (\"email\").and.equal (environment.studentEmail);",
+									"     });",
+									"        // Assertion",
+									"    it ('should return expected agree value', function(){",
+									"           response.body.data.should.have.property (\"agree\").and.equal (true);",
+									"     });",
+									"        // Assertion",
+									"    it ('should return expected DOB', function(){",
+									"        var x = environment.dob_year;",
+									"        var y = environment.dob_month;",
+									"        var n = environment.dob_day;",
+									"        var expDOB = x+\"-\"+y+\"-\"+n;",
+									"        response.body.data.should.have.property (\"dob\").and.equal(expDOB);",
+									"     });",
+									"    ",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/api/student/{{student_id}}",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"student",
+								"{{student_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login with ID",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": \"{{student_id}}\",\n    \"password\": \"123456\"\n}\n\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/api/login",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login with email",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"{{studentEmail}}\",\n    \"password\": \"123456\"\n}\n\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/api/login",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update profile info",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC9xYS50YWx0ZWt0Yy5jb20iLCJhdWQiOiJUSEVfQVVESUVOQ0UiLCJpYXQiOjE2MjA1NzQ0MDUsIm5iZiI6MTYyMDU3NDQxNSwiZXhwIjoxNjIwNjYwODA1LCJpc19hZG1pbiI6ZmFsc2UsImRhdGEiOnsiaWQiOiIxODAiLCJmaXJzdF9uYW1lIjoiQ2hhbmRsZXIiLCJsYXN0X25hbWUiOiJTY2htaWR0IiwiZW1haWwiOiJKYW1leS5TdGFudG9uQHlhaG9vLmNvbSIsInN0dWRlbnRJZCI6IlRUQ0NJOUYwIn19.ExyKzEp0YawPiRUFZ-nqbjsz7n97bZxh32gug7V8pp4",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"firstName\": \"Sumi\",\n    \"lastName\": \"Update\",\n    \"email\": \"newstudent@gmail.com\",\n    \"dob\": {\n        \"year\": 1996,\n        \"month\": 12,\n        \"day\": 31\n    },\n    \"gender\": \"female\",\n    \"agree\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/api/student/{{student_id}}",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"student",
+								"{{student_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Verify after update profile",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/api/student/TTClY7dF",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"student",
+								"TTClY7dF"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update password",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC9xYS50YWx0ZWt0Yy5jb20iLCJhdWQiOiJUSEVfQVVESUVOQ0UiLCJpYXQiOjE2MjA1NzQ0MDUsIm5iZiI6MTYyMDU3NDQxNSwiZXhwIjoxNjIwNjYwODA1LCJpc19hZG1pbiI6ZmFsc2UsImRhdGEiOnsiaWQiOiIxODAiLCJmaXJzdF9uYW1lIjoiQ2hhbmRsZXIiLCJsYXN0X25hbWUiOiJTY2htaWR0IiwiZW1haWwiOiJKYW1leS5TdGFudG9uQHlhaG9vLmNvbSIsInN0dWRlbnRJZCI6IlRUQ0NJOUYwIn19.ExyKzEp0YawPiRUFZ-nqbjsz7n97bZxh32gug7V8pp4",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"password\": \"test1234\",\n    \"confirmPassword\": \"test1234\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/api/updatePassword/{{student_id}}",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"updatePassword",
+								"{{student_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login with new password",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"newstudent@gmail.com\",\n    \"password\": \"test1234\"\n}\n\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/api/login",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete the student",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC9xYS50YWx0ZWt0Yy5jb20iLCJhdWQiOiJUSEVfQVVESUVOQ0UiLCJpYXQiOjE2MjA1NzQ0MDUsIm5iZiI6MTYyMDU3NDQxNSwiZXhwIjoxNjIwNjYwODA1LCJpc19hZG1pbiI6ZmFsc2UsImRhdGEiOnsiaWQiOiIxODAiLCJmaXJzdF9uYW1lIjoiQ2hhbmRsZXIiLCJsYXN0X25hbWUiOiJTY2htaWR0IiwiZW1haWwiOiJKYW1leS5TdGFudG9uQHlhaG9vLmNvbSIsInN0dWRlbnRJZCI6IlRUQ0NJOUYwIn19.ExyKzEp0YawPiRUFZ-nqbjsz7n97bZxh32gug7V8pp4",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/api/student/{{student_id}}",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"student",
+								"{{student_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Verify if student removed",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/api/student/TTClY7dF",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"student",
+								"TTClY7dF"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
