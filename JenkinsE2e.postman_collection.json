@@ -151,6 +151,23 @@
 				},
 				{
 					"name": "Login with ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const tkResponse = pm.response.json()",
+									"",
+									"const tokenId = pm.variables.replaceIn(tkResponse.token)",
+									"pm.environment.set(\"toKen\", tokenId)",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "POST",
 						"header": [],
@@ -211,7 +228,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC9xYS50YWx0ZWt0Yy5jb20iLCJhdWQiOiJUSEVfQVVESUVOQ0UiLCJpYXQiOjE2MjA1NzQ0MDUsIm5iZiI6MTYyMDU3NDQxNSwiZXhwIjoxNjIwNjYwODA1LCJpc19hZG1pbiI6ZmFsc2UsImRhdGEiOnsiaWQiOiIxODAiLCJmaXJzdF9uYW1lIjoiQ2hhbmRsZXIiLCJsYXN0X25hbWUiOiJTY2htaWR0IiwiZW1haWwiOiJKYW1leS5TdGFudG9uQHlhaG9vLmNvbSIsInN0dWRlbnRJZCI6IlRUQ0NJOUYwIn19.ExyKzEp0YawPiRUFZ-nqbjsz7n97bZxh32gug7V8pp4",
+									"value": "{{toKen}}",
 									"type": "string"
 								}
 							]
@@ -220,7 +237,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"firstName\": \"Sumi\",\n    \"lastName\": \"Update\",\n    \"email\": \"newstudent@gmail.com\",\n    \"dob\": {\n        \"year\": 1996,\n        \"month\": 12,\n        \"day\": 31\n    },\n    \"gender\": \"female\",\n    \"agree\": true\n}",
+							"raw": "{\n    \"firstName\": \"{{studentFirstName}}\",\n    \"lastName\": \"{{studentLastName}}\",\n    \"email\": \"{{studentEmail}}\",\n    \"dob\": {\n        \"year\": 1996,\n        \"month\": 12,\n        \"day\": 31\n    },\n    \"gender\": \"female\",\n    \"agree\": true\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -247,14 +264,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseURL}}/api/student/TTClY7dF",
+							"raw": "{{baseURL}}/api/student/{{student_id}}",
 							"host": [
 								"{{baseURL}}"
 							],
 							"path": [
 								"api",
 								"student",
-								"TTClY7dF"
+								"{{student_id}}"
 							]
 						}
 					},
@@ -268,7 +285,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC9xYS50YWx0ZWt0Yy5jb20iLCJhdWQiOiJUSEVfQVVESUVOQ0UiLCJpYXQiOjE2MjA1NzQ0MDUsIm5iZiI6MTYyMDU3NDQxNSwiZXhwIjoxNjIwNjYwODA1LCJpc19hZG1pbiI6ZmFsc2UsImRhdGEiOnsiaWQiOiIxODAiLCJmaXJzdF9uYW1lIjoiQ2hhbmRsZXIiLCJsYXN0X25hbWUiOiJTY2htaWR0IiwiZW1haWwiOiJKYW1leS5TdGFudG9uQHlhaG9vLmNvbSIsInN0dWRlbnRJZCI6IlRUQ0NJOUYwIn19.ExyKzEp0YawPiRUFZ-nqbjsz7n97bZxh32gug7V8pp4",
+									"value": "{{toKen}}",
 									"type": "string"
 								}
 							]
@@ -305,7 +322,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"email\": \"newstudent@gmail.com\",\n    \"password\": \"test1234\"\n}\n\n",
+							"raw": "{\n    \"email\": \"{{studentEmail}}\",\n    \"password\": \"test1234\"\n}\n\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -333,7 +350,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC9xYS50YWx0ZWt0Yy5jb20iLCJhdWQiOiJUSEVfQVVESUVOQ0UiLCJpYXQiOjE2MjA1NzQ0MDUsIm5iZiI6MTYyMDU3NDQxNSwiZXhwIjoxNjIwNjYwODA1LCJpc19hZG1pbiI6ZmFsc2UsImRhdGEiOnsiaWQiOiIxODAiLCJmaXJzdF9uYW1lIjoiQ2hhbmRsZXIiLCJsYXN0X25hbWUiOiJTY2htaWR0IiwiZW1haWwiOiJKYW1leS5TdGFudG9uQHlhaG9vLmNvbSIsInN0dWRlbnRJZCI6IlRUQ0NJOUYwIn19.ExyKzEp0YawPiRUFZ-nqbjsz7n97bZxh32gug7V8pp4",
+									"value": "{{toKen}}",
 									"type": "string"
 								}
 							]
